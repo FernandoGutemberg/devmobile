@@ -42,30 +42,37 @@ const App: React.FC = () => {
     }
   };
 
-  // // Função para enviar localização para o backend
+  // Função para enviar localização para o backend
   //Enviar conforme projeto Turismo
-  // const sendLocationToBackend = async (latitude: number | null, longitude: number | null): Promise<void> => {
-  //   if (latitude === null || longitude === null) {
-  //     Alert.alert("Erro", "Coordenadas inválidas");
-  //     return;
-  //   }
+  const sendLocationToBackend = async (latitude: number | null, longitude: number | null): Promise<void> => {
+    if (latitude === null || longitude === null) {
+      Alert.alert("Erro", "Coordenadas inválidas");
+      return;
+    }
 
-  //   try {
-  //     const response = await fetch(http://localhost:9000/g, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ latitude, longitude }),
-  //     });
 
-  //     const data = await response.json();
-  //     Alert.alert("Sucesso", data.mensagem);
-  //   } catch (error) {
-  //     Alert.alert("Erro", "Falha ao enviar localização");
-  //   }
-  // };
-
+  
+    try {
+      const response = await fetch("http://ip:9000/salvar-localizacao", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ latitude, longitude }),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.erro || "Erro desconhecido ao salvar localização");
+      }
+  
+      Alert.alert("Sucesso", data.mensagem);
+    } catch (error: any) {
+      Alert.alert("Erro", `Falha ao enviar localização: ${error.message}`);
+    }
+  };
+  
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>

@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const cors = require("cors");
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
@@ -27,15 +28,14 @@ mongoose.connect('mongodb+srv://fernando_projeto_x:FeksECxj2200hQ5v@cluster.w0jl
       }
   
       const local = new LocalModel({ latitude, longitude });
-      console.log(local);
-  
       await local.save();
   
-      res.json({ mensagem: "Localização salva com sucesso!", local: novoLocal });
+      res.json({ mensagem: "Localização salva com sucesso!", local });
     } catch (error) {
       res.status(500).json({ erro: error.message });
     }
   });
+  
   
 /* GET home page. */
 router.get('/', function(req, res, next) {

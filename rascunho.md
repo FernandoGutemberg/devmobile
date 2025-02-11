@@ -1,6 +1,6 @@
-faça uma rota do tipo post que recebe os dados de latitude e longitude do React Native
+faça uma rota do tipo post que recebe os dados de latitude e longitude do React Native - OK
 
-crie uma collection que armazena latitude e longitude, e a data da captura
+crie uma collection que armazena latitude e longitude, e a data da captura - OK
 
 por meio do use effect, capturar a cada um minuto latitude a longitude e salvar no banco
 
