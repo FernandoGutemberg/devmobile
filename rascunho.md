@@ -8,3 +8,14 @@ por meio do botão efetuar o salvamento manual de latitude e longitude no banco
 
 Mudando o www do express para n conflitar. 
 Ajustar rotas
+
+FAZER UM CRUD EM UMA NOVA COLLECTION (PLANTACAO), TEM QUE TER:
+- PLANTA (STRING)
+- O STATUS DELA  (STRING)
+- DATA DE CRIAÇÃO (TODA VEZ QUE SALVA)  (DATE)
+- DATA DE ATUALIZAÇÃO (TODA VEZ QUE EDITA) (DATE)
+- LAT   (STRING)
+- LONG  (STRING)
+
+- NO BANCO LOCAL (VERIFICAR EM VÍDEO COMO INSTALAR MONGODB LOCALMENTE); OK
+- 

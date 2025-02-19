@@ -53,7 +53,7 @@ const App: React.FC = () => {
 
   
     try {
-      const response = await fetch("http://ip:9000/salvar-localizacao", {
+      const response = await fetch("http://192.168.15.40:9000/salvar-localizacao", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,8 +77,14 @@ const App: React.FC = () => {
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         <View>
+        <Text style={styles.title}>Plantação</Text>
           <Text style={styles.title}>PEGA LOCALIZAÇÃO</Text>
-          <Text style={styles.subtitle}>VAMOS PEGAR LOCALIZAÇÃO AQUI</Text>
+          <Text style={styles.subtitle}>Vai ser inputs aqui</Text>
+          <Text style={styles.subtitle}>Nome da planta</Text>
+          <Text style={styles.subtitle}>Status da plantação(status'Sementeira', 'Germinação', 'Vegetativo', 'Floração', 'Frutificação', 'Saudável', 'Doente', 'Pragas', 'Seca', 'Excesso de água', 'Nutrientes', 'Colheita', 'Pós-colheita', 'Morta')</Text>
+          <Text style={styles.subtitle}>Coordenada geografica aqui</Text>
+          <Text style={styles.subtitle}>DAta de criação</Text>
+
 
           <Button title="BUSCAR" onPress={() => fetchLocation(false)} />
           <Button
