@@ -26,6 +26,11 @@ router.get('/', function (req, res, next) {
 // AQUI EU TENHO O CREATE - C - POST
 router.post("/salvar-localizacao", async (req, res) => {
   try {
+    // planta: { type: String, required: true }, // Nome da planta
+    // status: { type: String, required: true }, // Status da plantação
+    // createdAt: { type: Date, default: Date.now }, // Data de criação automática
+    // criar um data de atualização Date toda vez que edita, só será salvo se for edição
+  
     const { latitude, longitude } = req.body;
 
     if (!latitude || !longitude) {
