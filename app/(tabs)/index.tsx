@@ -10,6 +10,10 @@ const App: React.FC = () => {
   const [filteredStatuses, setFilteredStatuses] = useState<string[]>([]);
   const [showList, setShowList] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [nomePlanta, setNomePlanta] = useState("");
+  const [statusPlanta, setStatusPlanta] = useState("");
+  const [dataCriacao, setDataCriacao] = useState("");
+  const [dataEdicao, setDataEdicao] = useState("");
 
   const statuses = [
     'Sementeira', 'Germinação', 'Vegetativo', 'Floração', 'Frutificação',
@@ -110,6 +114,8 @@ const App: React.FC = () => {
           // longitude: {type: String, required: true }, // Coordenada geográfica */}
 
           {/*Inserir e mandar nome da Planta */}
+
+          
           <TextInput
             style={styles.input}
             placeholder="Nome da planta"
@@ -165,9 +171,40 @@ const App: React.FC = () => {
             title="SALVAR LOCALIZAÇÃO"
             onPress={() => sendLocationToBackend(latitude, longitude)}
           />
-          
+
           <Button title="Salvar"></Button>
           <Button title="Editar"></Button>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Nome da planta"
+          />
+
+                    {/* planta: {type: String, required: true }, // Nome da planta
+          // status: {type: String, required: true }, // Status da plantação
+          // createdAt: {type: Date, default: Date.now } // Data de criação automática
+          // criar um data de atualização Date toda vez que edita, só será salvo se for edição
+          // latitude: {type: String, required: true }, // Coordenada geográfica
+          // longitude: {type: String, required: true }, // Coordenada geográfica */}
+
+          <Text>Nome da Planta:</Text>
+          <TextInput 
+          style={styles.input}
+            placeholder="Nome da planta"
+          
+          value={nomePlanta} onChangeText={setNomePlanta}  />
+
+          <Text>Status da Planta:</Text>
+          <TextInput value={statusPlanta} onChangeText={setStatusPlanta} style={{ borderWidth: 1, marginBottom: 10 }} />
+
+          <Text>Data de criação:</Text>
+          <TextInput value={dataCriacao} onChangeText={setDataCriacao} style={{ borderWidth: 1, marginBottom: 10 }} />
+
+          <Text>Data de edição:</Text>
+          <TextInput value={dataEdicao} onChangeText={setDataEdicao} style={{ borderWidth: 1, marginBottom: 10 }} />
+
+          <Text>Latitude e longitude:</Text>
+
 
         </View>
       </SafeAreaView>
