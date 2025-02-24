@@ -76,7 +76,7 @@ const App: React.FC = () => {
     }
 
     try {
-      const url = `http://192.168.15.40:9000/salvar-plantacao${id ? `/${id}` : ""}`;
+      const url = `http://ip:9000/salvar-plantacao${id ? `/${id}` : ""}`;
       const method = id ? "PATCH" : "POST";
 
 
