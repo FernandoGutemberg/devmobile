@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Button, View, Text, TextInput, Alert, FlatList, TouchableOpacity } from "react-native";
+import { StyleSheet, Button, View, Text, TextInput, Alert, FlatList, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 
 const App: React.FC = () => {
-  const [latitude, setLatitude] = useState<string | null>(null);
-  const [longitude, setLongitude] = useState<string | null>(null);
   const [statusInput, setStatusInput] = useState("");
   const [filteredStatuses, setFilteredStatuses] = useState<string[]>([]);
   const [showList, setShowList] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<string>("");
+
   const [nomePlanta, setNomePlanta] = useState("");
-  const [statusPlanta, setStatusPlanta] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [dataCriacao, setDataCriacao] = useState("");
   const [dataEdicao, setDataEdicao] = useState("");
+  const [latitude, setLatitude] = useState<string | null>(null);
+  const [longitude, setLongitude] = useState<string | null>(null);
 
   const statuses = [
     'Sementeira', 'Germinação', 'Vegetativo', 'Floração', 'Frutificação',
@@ -49,77 +49,76 @@ const App: React.FC = () => {
     setShowList(false);           // Fecha a lista após seleção
   };
 
-  const fetchLocation = async (autoSave: boolean = false): Promise<void> => {
+  const fetchLocation = async (): Promise<void> => {
     try {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Erro", "Permissão para acessar localização foi negada");
-        return;
-      }
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+            Alert.alert("Erro", "Permissão para acessar localização foi negada");
+            return;
+        }
 
-      let currentLocation = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = currentLocation.coords;
+        let currentLocation = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = currentLocation.coords;
 
-      setLatitude(latitude.toString());
-      setLongitude(longitude.toString());
-
-      if (autoSave) {
-        sendLocationToBackend(latitude.toString(), longitude.toString());
-      } else {
-        Alert.alert("Localização Atual", `Latitude: ${latitude}\nLongitude: ${longitude}`);
-      }
+        setLatitude(latitude.toString());
+        setLongitude(longitude.toString());
     } catch (error: any) {
-      Alert.alert("Erro", `Erro ao buscar localização: ${error.message}`);
+        Alert.alert("Erro", `Erro ao buscar localização: ${error.message}`);
     }
-  };
+};
 
-  const sendLocationToBackend = async (latitude: string | null, longitude: string | null): Promise<void> => {
-    if (latitude === null || longitude === null) {
-      Alert.alert("Erro", "Coordenadas inválidas");
+  
+
+  const sendLocationToBackend = async (isEditing = false, id = null) => {
+    if (!nomePlanta || !selectedStatus || !latitude || !longitude || latitude === "" || longitude === "" || !selectedStatus) {
+      Alert.alert("Erro", "Preencha todos os campos antes de salvar.");
       return;
     }
 
     try {
-      const response = await fetch("http://ip:9000/salvar-localizacao", {
-        method: "POST",
+      const url = `http://192.168.15.40:9000/salvar-plantacao${id ? `/${id}` : ""}`;
+      const method = id ? "PATCH" : "POST";
+
+
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ latitude, longitude, status: selectedStatus }),
+        body: JSON.stringify({
+          planta: nomePlanta,
+          status: selectedStatus,
+          latitude: parseFloat(latitude),
+          longitude: parseFloat(longitude),
+        }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.erro || "Erro desconhecido ao salvar localização");
+        throw new Error(data.erro || "Erro desconhecido ao salvar a plantação.");
       }
 
-      Alert.alert("Sucesso", `Localização e status "${selectedStatus}" salvos com sucesso!`);
-    } catch (error: any) {
-      Alert.alert("Erro", `Falha ao enviar localização: ${error.message}`);
+      Alert.alert("Sucesso", `Plantação ${isEditing ? "atualizada" : "salva"} com sucesso!`);
+    } catch (error) {
+      Alert.alert("Erro", `Falha ao enviar dados: ${error}`);
     }
   };
+
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         <View>
+          <Image source={{ uri: 'assets:/images:/plantations.jpeg' }}
+            style={{ width: 50, height: 50 }} />
           <Text style={styles.title}>PLANTAÇÃO</Text>
 
-          {/* planta: {type: String, required: true }, // Nome da planta
-          // status: {type: String, required: true }, // Status da plantação
-          // createdAt: {type: Date, default: Date.now } // Data de criação automática
-          // criar um data de atualização Date toda vez que edita, só será salvo se for edição
-          // latitude: {type: String, required: true }, // Coordenada geográfica
-          // longitude: {type: String, required: true }, // Coordenada geográfica */}
-
-          {/*Inserir e mandar nome da Planta */}
-
-          
           <TextInput
             style={styles.input}
             placeholder="Nome da planta"
-          />
+            value={nomePlanta}
+            onChangeText={setNomePlanta} />
 
           {/*Inserir e mandar Status da Planta */}
           <TextInput
@@ -138,7 +137,7 @@ const App: React.FC = () => {
                 <TouchableOpacity
                   style={[
                     styles.option,
-                    item === selectedStatus && styles.selectedOption, // Aplica o estilo selecionado
+                    item === selectedStatus && styles.selectedOption, 
                   ]}
                   onPress={() => handleStatusSelect(item)}
                 >
@@ -151,59 +150,52 @@ const App: React.FC = () => {
             />
           )}
 
-          {/*Inserir e mandar Data de criação da Planta */}
           <TextInput
             style={styles.input}
             placeholder="Data de criação"
+            onChangeText={setDataCriacao}
           />
-
-          {/*Inserir e mandar Data de atualização da Planta toda ver que editar*/}
 
           <TextInput
             style={styles.input}
+            value={dataEdicao}
+            onChangeText={setDataEdicao}
             placeholder="Data da atualização"
           />
 
-          {/*Inserir e mandar latitude e longitude vai ser como um input interno*/}
 
-          <Button title="BUSCAR" onPress={() => fetchLocation(false)} />
+          <View style={{ display: 'none' }}>
+            {latitude !== null && (
+              <TextInput
+                style={styles.input}
+                value={latitude}
+                placeholder="Latitude"
+                editable={false} 
+              />
+            )}
+            {longitude !== null && (
+              <TextInput
+                style={styles.input}
+                value={longitude}
+                placeholder="Longitude"
+                editable={false} 
+              />
+            )}
+          </View>
+
+
           <Button
-            title="SALVAR LOCALIZAÇÃO"
-            onPress={() => sendLocationToBackend(latitude, longitude)}
+            title="Salvar"
+            onPress={() => {
+              fetchLocation(); // Busca a localização
+              sendLocationToBackend(false); // Salva os dados
+            }}
           />
 
-          <Button title="Salvar"></Button>
-          <Button title="Editar"></Button>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Nome da planta"
+          <Button
+            title="Editar"
+            onPress={() => sendLocationToBackend(true)}
           />
-
-                    {/* planta: {type: String, required: true }, // Nome da planta
-          // status: {type: String, required: true }, // Status da plantação
-          // createdAt: {type: Date, default: Date.now } // Data de criação automática
-          // criar um data de atualização Date toda vez que edita, só será salvo se for edição
-          // latitude: {type: String, required: true }, // Coordenada geográfica
-          // longitude: {type: String, required: true }, // Coordenada geográfica */}
-
-          <Text>Nome da Planta:</Text>
-          <TextInput 
-          style={styles.input}
-            placeholder="Nome da planta"
-          
-          value={nomePlanta} onChangeText={setNomePlanta}  />
-
-          <Text>Status da Planta:</Text>
-          <TextInput value={statusPlanta} onChangeText={setStatusPlanta} style={{ borderWidth: 1, marginBottom: 10 }} />
-
-          <Text>Data de criação:</Text>
-          <TextInput value={dataCriacao} onChangeText={setDataCriacao} style={{ borderWidth: 1, marginBottom: 10 }} />
-
-          <Text>Data de edição:</Text>
-          <TextInput value={dataEdicao} onChangeText={setDataEdicao} style={{ borderWidth: 1, marginBottom: 10 }} />
-
-          <Text>Latitude e longitude:</Text>
 
 
         </View>
